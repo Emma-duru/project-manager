@@ -23,6 +23,12 @@ mongoose.connect(process.env.DB_URI,
     })
 
 
+// Routes
+app.get("/", (req, res) => {
+    res.send("Home page");
+})
+
+
 // Set server to listen at a specific port
 app.listen(process.env.PORT, err => {
     if (err) throw err;

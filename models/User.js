@@ -7,7 +7,8 @@ const userSchema = mongoose.Schema({
     username: String,
     email: String,
     location: String,
-    bio: String
+    bio: String,
+    password: String,
 });
 
 // Hash the password

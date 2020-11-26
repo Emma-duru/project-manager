@@ -3,12 +3,14 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
+const projectRoutes = require("./routes/projectRoutes");
 
 // Initiate express app
 const app = express();
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static("public"));
 app.use(cookieParser());
 
 // Set up view engine
@@ -24,9 +26,7 @@ mongoose.connect(process.env.DB_URI,
 
 
 // Routes
-app.get("/", (req, res) => {
-    res.send("Home page");
-})
+app.use("/", projectRoutes);
 
 
 // Set server to listen at a specific port

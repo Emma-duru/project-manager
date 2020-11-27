@@ -72,13 +72,13 @@
                 const data = await res.json();
 
                 if (data.user) {
-                    location.assign("/");
+                    location.assign(`/${data.user.username}`);
                 }
 
-                if(data.error) {
-                    usernameError = data.error.username;
-                    emailError = data.error.email;
-                    passwordError = data.error.password;
+                if(data.errors) {
+                    usernameError = data.errors.username;
+                    emailError = data.errors.email;
+                    passwordError = data.errors.password;
                 }
 
             } catch (err) {

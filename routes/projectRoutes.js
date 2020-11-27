@@ -23,6 +23,7 @@ const handleErrors = (err) => {
             errors[properties.path] = properties.message;
         })
     }
+    return errors;
 }
 
 // Generate JWT
@@ -49,8 +50,7 @@ router.post("/signup", async(req, res) => {
     const { username, email, password } = req.body;
 
     try {
-        const user = User.create({ username, email, password });
-        console.log(user);
+        const user = await User.create({ username, email, password });
         const token = createToken(user._id);
         res.cookie("project_auth", token, {
             httpOnly: true,
@@ -63,10 +63,43 @@ router.post("/signup", async(req, res) => {
     }
 })
 
+
+
 // Login route
 router.get("/login", (req, res) => {
     res.render("login");
 })
+
+router.post("/login", async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const user = await User.login(username, password);
+        const token = createToken(user._id);
+        res.cookie("project_auth", token, {
+            httpOnly: true,
+            maxAge: maxAge * 1000
+        });
+        res.json({ user });
+    } catch (err) {
+        const errors = handleErrors(err);
+        res.json({ errors });
+    }
+})
+
+
+// User Home Route
+router.get("/:username", async(req, res) => {
+    const { username } = req.params;
+
+    try {
+        const user = await User.findOne({ username });
+        res.json({ user });
+    } catch(err) {
+        res.json({ err });
+    }
+})
+
 
 
 

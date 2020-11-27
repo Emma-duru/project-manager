@@ -10,10 +10,12 @@
             <form>
                 <div class="form-group">
                     <input type="text" name="username" class="form-control" placeholder="Username" autocomplete="off">
+                    <div class="username error"></div>
                 </div>
                 
                 <div class="form-group">
                     <input type="password" name="password" class="form-control" placeholder="Password">
+                    <div class="password error"></div>
                 </div>
                 
                 <div class="form-group">
@@ -25,4 +27,43 @@
     </div>
 </div>
 
+    <script>
+        const form = document.querySelector("form");
+        const usernameError = document.querySelector(".username.error");
+        const passwordError = document.querySelector(".password.error");
+
+        form.addEventListener("submit", async(e) => {
+            e.preventDefault();
+            
+            // Reset error fields
+            usernameError.textContent = "";
+            passwordError.textContent = "";
+
+            // Get values of the fields
+            const username = form.username.value;
+            const password = form.password.value;
+
+            try {
+                const res = await fetch("/login", {
+                    method: "POST",
+                    body: JSON.stringify({ username, password }),
+                    headers: { "Content-Type": "application/json" }
+                });
+                const data = await res.json();
+
+                if (data.user) {
+                    location.assign(`/${data.user.username}`);
+                }
+
+                if(data.errors) {
+                    usernameError = data.errors.username;
+                    passwordError = data.errors.password;
+                }
+
+            } catch (err) {
+                console.log(err);
+            }
+            
+        })
+    </script>
     <%- include("./partials/footer") %> 

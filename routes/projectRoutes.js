@@ -118,7 +118,7 @@ router.get("/:username", requireAuth, async(req, res) => {
     const { username } = req.params;
 
     try {
-        const user = await User.findOne({ username });
+        const user = await User.findOne({ username }).populate("projects");
         res.render("dashboard", { user: user });
     } catch(err) {
         res.json({ err });

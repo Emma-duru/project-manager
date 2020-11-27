@@ -32,4 +32,8 @@ projectSchema.virtual("date_created_formatted").get(function() {
     return DateTime.fromJSDate(this.date_created).toLocaleString(DateTime.DATE_MED);
 })
 
+projectSchema.virtual("due_date_formatted").get(function() {
+    return DateTime.fromJSDate(this.due_date).toLocaleString(DateTime.DATE_MED);
+})
+
 module.exports = mongoose.model("Project", projectSchema);

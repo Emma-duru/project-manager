@@ -140,6 +140,26 @@
         <!-- List of All the Projects -->
         <h3 class="my-3 text-center">ALL PROJECTS</h3>
         <hr>
+
+         <div class="row mt-4">
+
+            <% user.projects.forEach(project => { %> 
+
+                <div class="col-md-4">
+                    <div class="card text-white bg-primary mb-3">
+                        <h4 class="card-header"><a href=""><%= project.name %></a></h4>
+                        <div class="card-body">
+                            <small>Created on <strong><%= project.date_created_formatted %></strong></small>
+                            <p class="card-text"><%= project.description %></p>
+                        </div>
+                        <% if (project.due_date_formatted !== "Invalid DateTime") { %>
+                        <div class="card-footer">Due on <strong><%= project.due_date_formatted %></strong></div>
+                        <% } %>
+                    </div>
+                </div>
+
+            <% }) %> 
+         </div>
         <!-- List of All the Projects -->
 
     </div>

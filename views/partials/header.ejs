@@ -19,12 +19,31 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav ml-auto">
-                <a class="nav-link btn btn-primary text-white mx-3" href="/signup">SIGN UP</a>
-                <a class="nav-link mx-3 text-dark" href="/login">LOG IN</a>
+
+            <% if (user) { %> 
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav ml-auto">
+
+                        <div class="dropdown nav-link">
+                            <a class="text-primary dropdown-toggle" href="/<%= user %>" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-user fa-2x"></i>
+                            </a>
+
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <a class="dropdown-item" href="/<%= user %>/edit ">Edit Profile</a>
+                                <a class="dropdown-item" href="/logout">Logout</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            <% } else { %> 
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav ml-auto">
+                    <a class="nav-link btn btn-primary text-white mx-3" href="/signup">SIGN UP</a>
+                    <a class="nav-link mx-3 text-dark" href="/login">LOG IN</a>
+                    </div>
+                </div>
+            <% } %> 
         </div>
         
     </nav>

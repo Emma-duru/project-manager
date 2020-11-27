@@ -2,6 +2,7 @@ require("dotenv").config();
 const router = require("express")();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const { requireAuth } = require("../middleware/authMiddleware");
 
 // Handle Errors
 const handleErrors = (err) => {
@@ -90,8 +91,32 @@ router.post("/login", async (req, res) => {
 
 
 
+// Logout
+router.get("/logout", (req, res) => {
+    res.cookie("profile_auth", "", {
+        maxAge: 1
+    })
+    res.redirect("/");
+})
+
+
+
+// User Home Route
+router.get("/:username", requireAuth, async(req, res) => {
+    const { username } = req.params;
+
+    try {
+        const user = await User.findOne({ username });
+        res.render("dashboard", { user: user });
+    } catch(err) {
+        res.json({ err });
+    }
+})
+
+
+
 // Edit Route
-router.post("/:username/edit", async(req, res) => {
+router.post("/:username/edit", requireAuth, async(req, res) => {
     const { username } = req.params;
     const { first_name, last_name, email, bio } = req.body;
 
@@ -107,17 +132,7 @@ router.post("/:username/edit", async(req, res) => {
 
 
 
-// User Home Route
-router.get("/:username", async(req, res) => {
-    const { username } = req.params;
 
-    try {
-        const user = await User.findOne({ username });
-        res.render("dashboard", { user: user });
-    } catch(err) {
-        res.json({ err });
-    }
-})
 
 
 

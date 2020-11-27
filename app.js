@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const projectRoutes = require("./routes/projectRoutes");
+const { checkUser } = require("./middleware/authMiddleware");
 
 // Initiate express app
 const app = express();
@@ -27,6 +28,7 @@ mongoose.connect(process.env.DB_URI,
 
 
 // Routes
+app.use("*", checkUser);
 app.use("/", projectRoutes);
 
 

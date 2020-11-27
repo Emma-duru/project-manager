@@ -1,10 +1,11 @@
 <%- include("./partials/header") %> 
 
 <div class="row profile-row card-columns justify-content-around">
+    <!-- Profile Column -->
     <div class="col-md-3 profile-side p-4 text-center bio-side card">
-        <div class="profile-img profile-data">
+        <!-- <div class="profile-img profile-data">
             <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500" class="d-block w-100" alt="...">
-        </div>
+        </div> -->
 
         <h4><%= user.first_name %> <%= user.last_name %> </h4>
         <small><%= user.username %> </small><br>
@@ -32,12 +33,13 @@
 
         <hr>
 
-        <!-- Button trigger modal -->
+        <!-- Edit Profile Button -->
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
         Edit Profile
         </button>
+        <!-- Edit Profile Button -->
 
-        <!-- Modal -->
+        <!-- Edit Profile Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -48,6 +50,7 @@
                         </button>
                     </div>
                     
+                    <!-- Edit Profile Form -->
                     <form id="edit-profile">
                         <div class="modal-body">
                             <div class="row">
@@ -74,17 +77,90 @@
                             <button type="submit" class="btn btn-primary">Edit Profile</button>
                         </div>
                     </form>
+                    <!-- Edit Profile Form -->
                 </div>
             </div>
         </div>
+        <!-- Edit Profile Modal -->
 
     </div>
+    <!-- Profile Column -->
+
+
+    <!-- Project Column -->
+    <div class="col-md-8 profile-side p-4 card">
+        <!-- Create Project Button -->
+        <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#projectModal">
+        Create Project
+        </button>
+        <!-- Create Project Button -->
+
+        <!-- Create Project Modal -->
+        <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Create Project</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Create Project Form -->
+                    <form id="create-project">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <input type="text" name="name" class="form-control" placeholder="Project Name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="due date">Due date</label>
+                                <input type="date" name="due_date" class="form-control" placeholder="Due Date">
+                            </div>
+                            
+                            <div class="form-group">
+                                <textarea name="description" class="form-control" placeholder="Brief Description" cols="30" rows="10"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                    <!-- Create Project Form -->
+
+                </div>
+            </div>
+        </div>
+        <!-- Create Project Modal -->
+
+
+        <!-- List of All the Projects -->
+        <h3 class="my-3 text-center">ALL PROJECTS</h3>
+        <hr>
+        <!-- List of All the Projects -->
+
+    </div>
+    <!-- Project Column -->
+
 </div>
+
+
+
+
+
+
+
+
+
+
 
 <script>
     const profileEditForm = document.querySelector("#edit-profile");
     const emailError = document.querySelector(".email.error");
 
+
+    // Event Listener to edit profile
     profileEditForm.addEventListener("submit", async(e) => {
         e.preventDefault();
 
@@ -113,6 +189,19 @@
         } catch (err) {
             
         }
+    })
+
+    
+    const projectCreateForm = document.querySelector("#create-project");
+
+    projectCreateForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        
+        const name = projectCreateForm.name.value;
+        const due_date = projectCreateForm.due_date.value;
+        const description = projectCreateForm.description.value;
+
+
     })
 </script>
 

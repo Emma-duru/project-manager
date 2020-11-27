@@ -58,19 +58,6 @@
             const password = form.password.value;
             const confirmPassword = form.confirmPassword.value;
 
-            if (username === "") {
-                usernameError.textContent = "Please enter your username";
-                form.removeEventListener();
-            }
-            if (email === "") {
-                emailError.textContent = "Please enter your email";
-                form.removeEventListener();
-            }
-            if (password === "") {
-                passwordError.textContent = "Please enter your password";
-                form.removeEventListener();
-            }
-
             if (password !== confirmPassword) {
                 passwordError.textContent = "The two password fields must match";
                 form.removeEventListener();
@@ -88,12 +75,14 @@
                     location.assign("/");
                 }
 
-                if(data.emailError) {
-                    emailError.textContent = data.emailError;
+                if(data.error) {
+                    usernameError = data.error.username;
+                    emailError = data.error.email;
+                    passwordError = data.error.password;
                 }
 
             } catch (err) {
-                
+                console.log(err);
             }
             
         })

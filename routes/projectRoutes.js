@@ -1,11 +1,12 @@
 require("dotenv").config();
 const router = require("express")();
 const User = require("../models/User");
+const Project = require("../models/Project");
 const jwt = require("jsonwebtoken");
 const { requireAuth } = require("../middleware/authMiddleware");
 
 // Handle Errors
-const handleErrors = (err) => {
+const handleUserErrors = (err) => {
     const errors = { username: "", email: "", password: "" };
 
     if (err.code === 11000) {
@@ -20,6 +21,17 @@ const handleErrors = (err) => {
     }
 
     if (err.message.includes("User validation failed")) {
+        Object.values(err.errors).forEach(({ properties }) => {
+            errors[properties.path] = properties.message;
+        })
+    }
+    return errors;
+}
+
+const handleProjectErrors = (err) => {
+    const errors = { name: "" };
+
+    if (err._message === "Project validation failed") {
         Object.values(err.errors).forEach(({ properties }) => {
             errors[properties.path] = properties.message;
         })
@@ -60,7 +72,7 @@ router.post("/signup", async(req, res) => {
         });
         res.json({ user });
     } catch (err) {
-        const errors = handleErrors(err);
+        const errors = handleUserErrors(err);
         res.json({ errors });
     }
 })
@@ -84,7 +96,7 @@ router.post("/login", async (req, res) => {
         });
         res.json({ user });
     } catch (err) {
-        const errors = handleErrors(err);
+        const errors = handleUserErrors(err);
         res.json({ errors });
     }
 })
@@ -125,12 +137,27 @@ router.post("/:username/edit", requireAuth, async(req, res) => {
             { first_name, last_name, email, bio });
         res.json({ user });
     } catch(err) {
-        const errors = handleErrors(err);
+        const errors = handleUserErrors(err);
         res.json({ errors });
     }
 })
 
 
+
+// Project Create Route
+router.post("/:username/project/create", requireAuth, async(req, res) => {
+    const { username } = req.params;
+    const { name, description, due_date } = req.body;
+
+    try {
+        const user = await User.findOne({ username });
+        const project = await Project.create({ name, description, due_date, user: user._id });
+        res.json({ project, user });
+    } catch (err) {
+        const errors = handleProjectErrors(err);
+        res.json({ errors });
+    }
+})
 
 
 

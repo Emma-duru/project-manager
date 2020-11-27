@@ -111,11 +111,13 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <input type="text" name="name" class="form-control" placeholder="Project Name">
+                                <div class="name error text-danger"></div>
                             </div>
 
                             <div class="form-group">
                                 <label for="due date">Due date</label>
                                 <input type="date" name="due_date" class="form-control" placeholder="Due Date">
+                                <div class="due-date error text-danger"></div>
                             </div>
                             
                             <div class="form-group">
@@ -124,7 +126,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Save changes</button>
+                            <button type="submit" class="btn btn-primary">Create Project</button>
                         </div>
                     </form>
                     <!-- Create Project Form -->
@@ -193,14 +195,45 @@
 
     
     const projectCreateForm = document.querySelector("#create-project");
+    const projectNameError = document.querySelector(".name.error");
+    const projectDueDateError = document.querySelector(".due-date.error");
 
-    projectCreateForm.addEventListener("submit", (e) => {
+    projectCreateForm.addEventListener("submit", async(e) => {
         e.preventDefault();
         
+        projectNameError.textContent = "";
+        projectDueDateError.textContent = "";
+
         const name = projectCreateForm.name.value;
         const due_date = projectCreateForm.due_date.value;
         const description = projectCreateForm.description.value;
 
+
+        if(due_date < Date.now()) {
+            projectDueDateError.textContent = "Please enter a valid due date";
+            projectCreateForm.removeEventListener();
+        }
+
+
+
+        try {
+            const res = await fetch("/<%= user.username %>/project/create", {
+                method: "POST",
+                body: JSON.stringify({ name, due_date, description }),
+                headers: { "Content-Type": "application/json" }
+            });
+            const data = await res.json();
+
+            if (data.user) {
+                location.assign(`/${data.user.username}`);
+            }
+
+            if (data.errors) {
+                projectNameError.textContent = data.errors.name;
+            }
+        } catch (err) {
+            console.log(err);
+        }
 
     })
 </script>

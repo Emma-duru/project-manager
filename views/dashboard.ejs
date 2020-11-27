@@ -1,0 +1,119 @@
+<%- include("./partials/header") %> 
+
+<div class="row profile-row card-columns justify-content-around">
+    <div class="col-md-3 profile-side p-4 text-center bio-side card">
+        <div class="profile-img profile-data">
+            <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500" class="d-block w-100" alt="...">
+        </div>
+
+        <h4><%= user.first_name %> <%= user.last_name %> </h4>
+        <small><%= user.username %> </small><br>
+        <small class="text-muted"><%= user.email %></small>
+
+        <hr>
+
+        <h5 class="text-primary">Bio</h5>
+        <p class="text-muted"><%= user.bio %></p>
+
+        <hr>
+
+        <h5 class="text-primary">Total Projects</h5>
+        <p>10</p>
+
+        <hr>
+
+        <h5 class="text-primary">Completed Projects</h5>
+        <p>8</p>
+
+        <hr>
+
+        <h5 class="text-primary">Ongoing Projects</h5>
+        <p>2</p>
+
+        <hr>
+
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        Edit Profile
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit Profile</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    
+                    <form id="edit-profile">
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <input type="text" name="first_name" class="form-control" placeholder="First Name" value="<%= user.first_name %>">
+                                </div>
+                                
+                                <div class="form-group col-md-6">
+                                    <input type="text" name="last_name" class="form-control" placeholder="Last Name" value="<%= user.last_name %>">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" name="email" class="form-control" placeholder="Email" value="<%= user.email %>">
+                                <div class="email error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <textarea name="bio" class="form-control" cols="30" rows="10" placeholder="Brief Bio"><%= user.bio %></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Edit Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const profileEditForm = document.querySelector("#edit-profile");
+    const emailError = document.querySelector(".email.error");
+
+    profileEditForm.addEventListener("submit", async(e) => {
+        e.preventDefault();
+
+        emailError.textContent = "";
+
+        const first_name = profileEditForm.first_name.value;
+        const last_name = profileEditForm.last_name.value;
+        const email = profileEditForm.email.value;
+        const bio = profileEditForm.bio.value;
+
+        try {
+            const res = await fetch("/<%= user.username %>/edit", {
+                method: "POST",
+                body: JSON.stringify({ first_name, last_name, email, bio }),
+                headers: { "Content-Type": "application/json" }
+            });
+            const data = await res.json();
+
+            if (data.user) {
+                location.assign(`/${data.user.username}`);
+            }
+
+            if (data.errors) {
+                emailError.textContent = data.errors.email;
+            }
+        } catch (err) {
+            
+        }
+    })
+</script>
+
+<%- include("./partials/footer") %> 

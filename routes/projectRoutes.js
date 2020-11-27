@@ -35,6 +35,7 @@ const createToken = id => {
     return token;
 }
 
+
 // Home route
 router.get("/", (req, res) => {
     res.render("home")
@@ -88,13 +89,31 @@ router.post("/login", async (req, res) => {
 })
 
 
+
+// Edit Route
+router.post("/:username/edit", async(req, res) => {
+    const { username } = req.params;
+    const { first_name, last_name, email, bio } = req.body;
+
+    try {
+        const user = await User.findOneAndUpdate({ username },
+            { first_name, last_name, email, bio });
+        res.json({ user });
+    } catch(err) {
+        const errors = handleErrors(err);
+        res.json({ errors });
+    }
+})
+
+
+
 // User Home Route
 router.get("/:username", async(req, res) => {
     const { username } = req.params;
 
     try {
         const user = await User.findOne({ username });
-        res.json({ user });
+        res.render("dashboard", { user: user });
     } catch(err) {
         res.json({ err });
     }

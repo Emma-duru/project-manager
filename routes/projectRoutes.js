@@ -21,11 +21,25 @@ const handleUserErrors = (err) => {
         }
     }
 
+
     if (err.message.includes("User validation failed")) {
         Object.values(err.errors).forEach(({ properties }) => {
             errors[properties.path] = properties.message;
         })
     }
+    return errors;
+}
+
+const handleLoginErrors = (err) => {
+    const errors = { username: "", password: ""};
+    if (err.message === "Incorrect username") {
+        errors.username = "This username is incorrect";
+    }
+
+    if (err.message === "Incorrect password") {
+        errors.password = "This password is incorrect";
+    }
+
     return errors;
 }
 
@@ -97,7 +111,7 @@ router.post("/login", async (req, res) => {
         });
         res.json({ user });
     } catch (err) {
-        const errors = handleUserErrors(err);
+        const errors = handleLoginErrors(err);
         res.json({ errors });
     }
 })

@@ -45,7 +45,7 @@
                     <form id="edit-project">
                         <div class="modal-body">
                             <div class="form-group">
-                                <input type="text" name="name" class="form-control" placeholder="Project Name" value="<%= project.name %>">
+                                <input type="text" name="name" class="form-control" placeholder="Project Name" required="true" value="<%= project.name %>" autocomplete="off">
                                 <div class="name error text-danger"></div>
                             </div>
 
@@ -118,7 +118,7 @@
         <!-- Add tasks button -->
 
 
-        <!-- Modal -->
+        <!-- Add Tasks Modal -->
         <div class="modal fade" id="taskCreateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -132,7 +132,7 @@
                     <form id="create-task">
                         <div class="modal-body">
                             <div class="form-group">
-                                <input type="text" name="name" class="form-control" placeholder="Task Name">
+                                <input type="text" name="name" class="form-control" placeholder="Task Name" autocomplete="off">
                                 <div class="name error text-danger"></div>
                             </div>
                             
@@ -148,12 +148,20 @@
                 </div>
             </div>
         </div>
-        <h3 class="my-3 text-center">ALL TASKS FOR PROJECT 1</h3>
+        <!-- Add Tasks Modal -->
+
+        <h3 class="my-3 text-center">All Tasks for <%= project.name %></h3>
         <hr>
 
+        <!-- List of all the Tasks -->
         <% project.tasks.forEach(task => { %>
-            <p><%= task.name %></p>
+            <div class="card p-3">
+                <h5><a href=""><%= task.name %></a></h5> 
+                <p><%= task.description %></p> 
+            </div>
         <% }) %>
+
+        <!-- List of all the Tasks -->
     </div>
     <!-- Task Details -->
 
@@ -214,7 +222,7 @@
         taskNameError.textContent = "";
 
         const name = taskCreateForm.name.value;
-        const description = taskCreateForm.name.value;
+        const description = taskCreateForm.description.value;
 
 
         try {

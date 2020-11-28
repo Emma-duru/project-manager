@@ -11,22 +11,22 @@
 
                 <form>
                     <div class="form-group">
-                        <input type="text" name="username" class="form-control" placeholder="Username" autocomplete="off">
+                        <input type="text" name="username" class="form-control" required="true" placeholder="Username" autocomplete="off">
                         <div class="username error text-danger"></div>
                     </div>
                     
                     <div class="form-group">
-                        <input type="text" name="email" class="form-control" placeholder="Email Address" autocomplete="nope">
+                        <input type="text" name="email" class="form-control" required="true" placeholder="Email Address" autocomplete="nope">
                         <div class="email error text-danger"></div>
                     </div>
                     
                     <div class="form-group">
-                        <input type="password" name="password" class="form-control" placeholder="Password">
+                        <input type="password" name="password" class="form-control" required="true" placeholder="Password">
                         <div class="password error text-danger"></div>
                     </div>
                     
                     <div class="form-group">
-                        <input type="password" name="confirmPassword" class="form-control" placeholder="Confirm Password">
+                        <input type="password" name="confirmPassword" class="form-control" required="true" placeholder="Confirm Password">
                     </div>
                     
                     <div class="form-group">
@@ -76,9 +76,9 @@
                 }
 
                 if(data.errors) {
-                    usernameError = data.errors.username;
-                    emailError = data.errors.email;
-                    passwordError = data.errors.password;
+                    usernameError.textContent = data.errors.username;
+                    emailError.textContent = data.errors.email;
+                    passwordError.textContent = data.errors.password;
                 }
 
             } catch (err) {

@@ -9,13 +9,13 @@
 
             <form>
                 <div class="form-group">
-                    <input type="text" name="username" class="form-control" placeholder="Username" autocomplete="off">
-                    <div class="username error"></div>
+                    <input type="text" name="username" class="form-control" placeholder="Username" required="true" autocomplete="off">
+                    <div class="username error text-danger"></div>
                 </div>
                 
                 <div class="form-group">
-                    <input type="password" name="password" class="form-control" placeholder="Password">
-                    <div class="password error"></div>
+                    <input type="password" name="password" class="form-control" placeholder="Password" required="true">
+                    <div class="password error text-danger"></div>
                 </div>
                 
                 <div class="form-group">
@@ -56,8 +56,8 @@
                 }
 
                 if(data.errors) {
-                    usernameError = data.errors.username;
-                    passwordError = data.errors.password;
+                    usernameError.textContent = data.errors.username;
+                    passwordError.textContent = data.errors.password;
                 }
 
             } catch (err) {

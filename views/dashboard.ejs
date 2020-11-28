@@ -2,10 +2,7 @@
 
 <div class="row profile-row card-columns justify-content-around">
     <!-- Profile Column -->
-    <div class="col-md-3 profile-side p-4 text-center bio-side card">
-        <!-- <div class="profile-img profile-data">
-            <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500" class="d-block w-100" alt="...">
-        </div> -->
+    <div class="col-sm-3 profile-side p-4 text-center bio-side card">
 
         <h4><%= user.first_name %> <%= user.last_name %> </h4>
         <small><%= user.username %> </small><br>
@@ -19,17 +16,17 @@
         <hr>
 
         <h5 class="text-primary">Total Projects</h5>
-        <p>10</p>
+        <p><%= total_projects %></p>
 
         <hr>
 
         <h5 class="text-primary">Completed Projects</h5>
-        <p>8</p>
+        <p><%= completedProjects %></p>
 
         <hr>
 
         <h5 class="text-primary">Ongoing Projects</h5>
-        <p>2</p>
+        <p><%= ongoingProjects %></p>
 
         <hr>
 
@@ -39,102 +36,20 @@
         </button>
         <!-- Edit Profile Button -->
 
-        <!-- Edit Profile Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Edit Profile</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    
-                    <!-- Edit Profile Form -->
-                    <form id="edit-profile">
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="form-group col-md-6">
-                                    <input type="text" name="first_name" class="form-control" placeholder="First Name" value="<%= user.first_name %>">
-                                </div>
-                                
-                                <div class="form-group col-md-6">
-                                    <input type="text" name="last_name" class="form-control" placeholder="Last Name" value="<%= user.last_name %>">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="text" name="email" class="form-control" placeholder="Email" value="<%= user.email %>">
-                                <div class="email error"></div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <textarea name="bio" class="form-control" cols="30" rows="10" placeholder="Brief Bio"><%= user.bio %></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Edit Profile</button>
-                        </div>
-                    </form>
-                    <!-- Edit Profile Form -->
-                </div>
-            </div>
-        </div>
-        <!-- Edit Profile Modal -->
+        
 
     </div>
     <!-- Profile Column -->
 
 
     <!-- Project Column -->
-    <div class="col-md-8 profile-side p-4 card">
+    <div class="col-sm-8 profile-side p-4 card">
         <!-- Create Project Button -->
         <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#projectModal">
         Create Project
         </button>
         <!-- Create Project Button -->
 
-        <!-- Create Project Modal -->
-        <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Create Project</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    
-                    <!-- Create Project Form -->
-                    <form id="create-project">
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <input type="text" name="name" class="form-control" placeholder="Project Name">
-                                <div class="name error text-danger"></div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="due date">Due date</label>
-                                <input type="date" name="due_date" class="form-control" placeholder="Due Date">
-                                <div class="due-date error text-danger"></div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <textarea name="description" class="form-control" placeholder="Brief Description" cols="30" rows="10"></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Create Project</button>
-                        </div>
-                    </form>
-                    <!-- Create Project Form -->
-
-                </div>
-            </div>
-        </div>
-        <!-- Create Project Modal -->
 
 
         <!-- List of All the Projects -->
@@ -147,7 +62,7 @@
 
                 <div class="col-md-4">
                     <div class="card text-white bg-primary mb-3">
-                        <h4 class="card-header"><a href=""><%= project.name %></a></h4>
+                        <h4 class="card-header"><a href="/<%= user.username %>/project/<%= project._id %>"><%= project.name %></a></h4>
                         <div class="card-body">
                             <small>Created on <strong><%= project.date_created_formatted %></strong></small>
                             <p class="card-text"><%= project.description %></p>
@@ -168,16 +83,8 @@
 </div>
 
 
-
-
-
-
-
-
-
-
-
 <script>
+    
     const profileEditForm = document.querySelector("#edit-profile");
     const emailError = document.querySelector(".email.error");
 
@@ -231,7 +138,7 @@
 
         if(due_date < Date.now()) {
             projectDueDateError.textContent = "Please enter a valid due date";
-            projectCreateForm.removeEventListener();
+            projectCreateForm.removeEventListener("submit");
         }
 
 
@@ -256,6 +163,7 @@
         }
 
     })
+
 </script>
 
 <%- include("./partials/footer") %> 

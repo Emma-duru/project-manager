@@ -119,7 +119,13 @@ router.get("/:username", requireAuth, async(req, res) => {
 
     try {
         const user = await User.findOne({ username }).populate("projects");
-        res.render("dashboard", { user: user });
+        const ongoingProjects = await Project.countDocuments({ user: user._id, isComplete: false });
+        res.render("dashboard", { 
+            user: user, 
+            total_projects: user.projects.length, 
+            ongoingProjects: ongoingProjects,
+            completedProjects: user.projects.length - ongoingProjects
+        });
     } catch(err) {
         res.json({ err });
     }
@@ -161,6 +167,51 @@ router.post("/:username/project/create", requireAuth, async(req, res) => {
 
 
 
+// Project route
+router.get("/:username/project/:projectId", requireAuth, async(req, res) => {
+    const { username, projectId } = req.params;
+
+    try {
+        const user = await User.findOne({ username });
+        const project = await Project.findOne({ _id: projectId, user: user._id });
+        res.render("project", { project: project, user: user });
+    } catch (err) {
+        res.json({ err });
+    }
+})
+
+
+// Project Edit Route
+router.post("/:username/project/:projectId/edit", requireAuth, async(req, res) => {
+    const { username, projectId } = req.params;
+    const { name, due_date, description } = req.body;
+
+    try {
+        const user = await User.findOne({ username });
+        const project = await Project.findOneAndUpdate(
+            { user: user._id, _id: projectId }, 
+            { name, due_date, description });
+        res.json({ user, project })
+    } catch {
+        const errors = handleUserErrors(err);
+        res.json({ errors });
+    }
+})
+
+
+
+// Project Delete Route
+router.post("/:username/project/:projectId/delete", requireAuth, async(req, res) => {
+    const { username, projectId } = req.params;
+
+    try {
+        const user = await User.findOne({ username });
+        await Project.findOneAndDelete({ user: user._id, _id: projectId });
+        res.redirect(`/${user.username}`);
+    } catch (err) {
+        res.json({ err });
+    }
+})
 
 
 

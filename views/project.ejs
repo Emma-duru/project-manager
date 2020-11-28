@@ -1,0 +1,168 @@
+<%- include("./partials/header") %>
+
+<div class="row project-row card-columns justify-content-around">
+
+    <!-- Project Details -->
+    <div class="col-sm-3 project-side p-4 text-center bio-side card">
+
+        <h4><%= project.name %></h4>
+        <small class="text-muted">Created on <strong><%= project.date_created_formatted %></strong></small><br>
+        <small class="text-danger">Due on <strong><%= project.due_date_formatted %></strong></small><br>
+
+        <button class="btn btn-outline-success complete-btn my-2">Mark as complete</button>
+
+        <hr>
+
+        <h5 class="text-primary">Description</h5>
+        <p class="text-muted"><%= project.description %></p>
+
+        <hr>
+
+        <h5 class="text-primary">Total Tasks</h5>
+        <p>10</p>
+
+        <hr>
+
+        <h5 class="text-primary">Completed Tasks</h5>
+        <p>8</p>
+
+        <hr>
+
+        <h5 class="text-primary">Ongoing Tasks</h5>
+        <p>2</p>
+
+        <hr>
+
+        <!-- Edit Project Button -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editprojectModal">
+            Edit Project
+        </button>
+        <!-- Edit Project Button -->
+
+
+        <!-- Edit Project Modal -->
+        <div class="modal fade" id="editprojectModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit Project</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    
+                    <form id="edit-project">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <input type="text" name="name" class="form-control" placeholder="Project Name" value="<%= project.name %>">
+                                <div class="name error text-danger"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="due date">Due date</label>
+                                <input type="date" name="due_date" class="form-control" placeholder="Due Date" value="<%= project.due_date %>">
+                                <div class="due-date error text-danger"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <textarea name="description" class="form-control" placeholder="Brief Description" cols="30" rows="10"><%= project.description %></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Edit Project</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Edit Project Modal -->
+
+
+        <!-- Delete Project Button -->
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteprojectModal">
+            Delete Project
+        </button>
+        <!-- Delete Project Button -->
+
+        <!-- Delete Project Modal -->
+        <div class="modal fade" id="deleteprojectModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Delete Project</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Delete Project Form -->
+                    <form action="/<%= user.username %>/project/<%= project._id %>/delete" method="POST">
+                        <div class="modal-body">
+                            <p>Are your sure you want to delete "<%= project.name %>" </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No, Go back</button>
+                            <button type="submit" class="btn btn-danger">Yes, Delete Project</button>
+                        </div>
+                    </form>
+                    <!-- Edit Project Form -->
+                </div>
+            </div>
+        </div>
+        <!-- Delete Project Modal -->
+        
+    </div>
+    <!-- Project Details -->
+
+    
+    
+
+</div>
+
+
+<script>
+    const projectEditForm = document.querySelector("#edit-project");
+    const projectNameError = document.querySelector(".name.error");
+    const projectDueDateError = document.querySelector(".due-date.error");
+
+    projectEditForm.addEventListener("submit", async(e) => {
+        e.preventDefault();
+        
+        projectNameError.textContent = "";
+        projectDueDateError.textContent = "";
+
+        const name = projectEditForm.name.value;
+        const due_date = projectEditForm.due_date.value;
+        const description = projectEditForm.description.value;
+
+
+        if(due_date < Date.now()) {
+            projectDueDateError.textContent = "Please enter a valid due date";
+            projectEditForm.removeEventListener("submit");
+        }
+
+
+
+        try {
+            const res = await fetch("/<%= user.username %>/project/<%= project._id %>/edit", {
+                method: "POST",
+                body: JSON.stringify({ name, due_date, description }),
+                headers: { "Content-Type": "application/json" }
+            });
+            const data = await res.json();
+
+            if (data.user) {
+                location.assign(`/${data.user.username}/project/${data.project._id}`);
+            }
+
+            if (data.errors) {
+                projectNameError.textContent = data.errors.name;
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
+    })
+</script>
+<%- include("./partials/footer") %> 

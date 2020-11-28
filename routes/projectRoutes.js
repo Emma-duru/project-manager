@@ -2,6 +2,7 @@ require("dotenv").config();
 const router = require("express")();
 const User = require("../models/User");
 const Project = require("../models/Project");
+const Task = require("../models/Task");
 const jwt = require("jsonwebtoken");
 const { requireAuth } = require("../middleware/authMiddleware");
 
@@ -101,8 +102,6 @@ router.post("/login", async (req, res) => {
     }
 })
 
-
-
 // Logout
 router.get("/logout", (req, res) => {
     res.cookie("profile_auth", "", {
@@ -131,9 +130,7 @@ router.get("/:username", requireAuth, async(req, res) => {
     }
 })
 
-
-
-// Edit Route
+// User Edit Route
 router.post("/:username/edit", requireAuth, async(req, res) => {
     const { username } = req.params;
     const { first_name, last_name, email, bio } = req.body;
@@ -165,21 +162,18 @@ router.post("/:username/project/create", requireAuth, async(req, res) => {
     }
 })
 
-
-
 // Project route
 router.get("/:username/project/:projectId", requireAuth, async(req, res) => {
     const { username, projectId } = req.params;
 
     try {
         const user = await User.findOne({ username });
-        const project = await Project.findOne({ _id: projectId, user: user._id });
+        const project = await Project.findOne({ _id: projectId, user: user._id }).populate("tasks");
         res.render("project", { project: project, user: user });
     } catch (err) {
         res.json({ err });
     }
 })
-
 
 // Project Edit Route
 router.post("/:username/project/:projectId/edit", requireAuth, async(req, res) => {
@@ -198,8 +192,6 @@ router.post("/:username/project/:projectId/edit", requireAuth, async(req, res) =
     }
 })
 
-
-
 // Project Delete Route
 router.post("/:username/project/:projectId/delete", requireAuth, async(req, res) => {
     const { username, projectId } = req.params;
@@ -214,5 +206,21 @@ router.post("/:username/project/:projectId/delete", requireAuth, async(req, res)
 })
 
 
+
+// Task Create Route
+router.post("/:username/project/:projectId/task/create", requireAuth, async(req, res) => {
+    const { username, projectId } = req.params;
+    const { name, description } = req.body;
+
+    try {
+        const user = await User.findOne({ username });
+        const project = await Project.findOne({ _id: projectId, user: user._id });
+        const task = await Task.create({ name, description, project: project._id });
+        res.json({ user, project, task });
+    } catch (err) {
+        const errors = handleProjectErrors(err);
+        res.json({ errors });
+    }
+})
 
 module.exports = router;

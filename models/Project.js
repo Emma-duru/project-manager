@@ -28,6 +28,12 @@ const projectSchema = new mongoose.Schema({
 })
 
 
+projectSchema.virtual("tasks", {
+    ref: "Task",
+    localField: "_id",
+    foreignField: "project"
+})
+
 projectSchema.virtual("date_created_formatted").get(function() {
     return DateTime.fromJSDate(this.date_created).toLocaleString(DateTime.DATE_MED);
 })
@@ -35,5 +41,8 @@ projectSchema.virtual("date_created_formatted").get(function() {
 projectSchema.virtual("due_date_formatted").get(function() {
     return DateTime.fromJSDate(this.due_date).toLocaleString(DateTime.DATE_MED);
 })
+
+projectSchema.set("toJSON", { virtuals: true });
+projectSchema.set("toObject", { virtuals: true });
 
 module.exports = mongoose.model("Project", projectSchema);

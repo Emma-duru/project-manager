@@ -1,6 +1,6 @@
 <%- include("./partials/header") %>
 
-<div class="row project-row card-columns justify-content-around">
+<div class="row profile-row card-columns justify-content-around">
 
     <!-- Project Details -->
     <div class="col-sm-3 project-side p-4 text-center bio-side card">
@@ -19,17 +19,8 @@
         <hr>
 
         <h5 class="text-primary">Total Tasks</h5>
-        <p>10</p>
+        <p><%= project.tasks.length %></p>
 
-        <hr>
-
-        <h5 class="text-primary">Completed Tasks</h5>
-        <p>8</p>
-
-        <hr>
-
-        <h5 class="text-primary">Ongoing Tasks</h5>
-        <p>2</p>
 
         <hr>
 
@@ -117,6 +108,54 @@
 
     
     
+    <!-- Task Details -->
+    <div class="col-md-8 profile-side p-4 card">
+
+        <!-- Add tasks button -->
+        <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#taskCreateModal">
+        Add Task
+        </button>
+        <!-- Add tasks button -->
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="taskCreateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add Task</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    
+                    <form id="create-task">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <input type="text" name="name" class="form-control" placeholder="Task Name">
+                                <div class="name error text-danger"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <textarea name="description" class="form-control" placeholder="Brief Description" cols="30" rows="10"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Add Task</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <h3 class="my-3 text-center">ALL TASKS FOR PROJECT 1</h3>
+        <hr>
+
+        <% project.tasks.forEach(task => { %>
+            <p><%= task.name %></p>
+        <% }) %>
+    </div>
+    <!-- Task Details -->
 
 </div>
 
@@ -164,5 +203,41 @@
         }
 
     })
+
+
+    const taskCreateForm = document.querySelector("#create-task");
+    const taskNameError = document.querySelector("#create-task .name.error");
+
+    taskCreateForm.addEventListener("submit", async(e) => {
+        e.preventDefault();
+
+        taskNameError.textContent = "";
+
+        const name = taskCreateForm.name.value;
+        const description = taskCreateForm.name.value;
+
+
+        try {
+            const res = await fetch("/<%= user.username %>/project/<%= project._id %>/task/create", {
+                method: "POST",
+                body: JSON.stringify({ name, description }),
+                headers: { "Content-Type": "application/json" }
+            });
+            const data = await res.json();
+
+            if (data.task) {
+                location.assign("/<%= user.username %>/project/<%= project._id %>")
+            }
+
+            if (data.errors) {
+                taskNameError.textContent = data.errors.name;
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
+    })
+
+
 </script>
 <%- include("./partials/footer") %> 

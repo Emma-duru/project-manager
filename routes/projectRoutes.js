@@ -11,13 +11,13 @@ const handleUserErrors = (err) => {
     const errors = { username: "", email: "", password: "" };
 
     if (err.code === 11000) {
-        const key = Object.values(err.keyPattern);
+        const key = Object.keys(err.keyPattern);
         if(key.includes("username")) {
-            err.username = "This username is already registered";
+            errors.username = "This username is already registered";
         }
 
         if(key.includes("email")) {
-            err.email = "This email is already registered";
+            errors.email = "This email is already registered";
         }
     }
 

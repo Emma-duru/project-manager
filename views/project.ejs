@@ -58,8 +58,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="due date">Due date</label>
-                                <input type="date" name="due_date" class="form-control" placeholder="Due Date" value="<%= project.due_date %>">
+                                <input type="date" name="due_date" class="form-control" placeholder="Due Date" value="<%= project.due_date.toISOString().substr(0, 10) %>">
                                 <div class="due-date error text-danger"></div>
                             </div>
                             
@@ -187,13 +186,13 @@
                                     <% } %> 
 
                                 <!-- Task Edit Button -->
-                                <a class="mr-3" data-toggle="modal tooltip" title="Edit Task" href="#taskEditModal<%= i %>">
+                                <a class="mr-3" data-toggle="modal" title="Edit Task" href="#taskEditModal<%= i %>">
                                     <i id="task-edit" class="fas fa-edit text-primary"></i>
                                 </a>
                                 <!-- Task Edit Button -->
 
                                 <!-- Task Delete Button -->
-                                <a class="mr-3" data-toggle="modal tooltip" title="Delete Task"" href="#taskDeleteModal<%= i %>">
+                                <a class="mr-3" data-toggle="modal" title="Delete Task" href="#taskDeleteModal<%= i %>">
                                     <i id="task-delete" class="fas fa-trash-alt text-danger"></i>
                                 </a>
                                 <!-- Task Delete Button -->
@@ -254,7 +253,7 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-primary">Delete Task</button>
+                                                <button type="submit" class="btn btn-danger">Delete Task</button>
                                             </div>
                                         </form>
                                     </div>
@@ -265,9 +264,16 @@
 
                         </span>
                         <button class="btn btn-link" data-toggle="collapse" data-target="#collapse<%= i %>" aria-expanded="true" aria-controls="collapse<%= i %>" style="text-decoration: none;">
-                            <span <% if (task.isComplete) { %> class="text-success" <% } %>>
-                                <%= task.name %>
-                            </span>
+
+                            <% if (task.isComplete) { %>
+                                <span class="text-success">
+                                    <del><%= task.name %></del>
+                                </span>
+                            <% } else { %>
+                                <span>
+                                    <%= task.name %>
+                                </span>
+                            <% } %>
                         </button>
                     </h5>
                     </div>
@@ -310,7 +316,7 @@
         const description = projectEditForm.description.value;
 
 
-        if(due_date < Date.now()) {
+        if(due_date && due_date < Date.now()) {
             projectDueDateError.textContent = "Please enter a valid due date";
             projectEditForm.removeEventListener("submit");
         }

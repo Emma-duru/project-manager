@@ -137,7 +137,7 @@
         const description = projectCreateForm.description.value;
 
 
-        if(due_date < Date.now()) {
+        if(due_date && due_date < Date.now()) {
             projectDueDateError.textContent = "Please enter a valid due date";
             projectCreateForm.removeEventListener("submit");
         }

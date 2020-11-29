@@ -237,4 +237,35 @@ router.post("/:username/project/:projectId/task/create", requireAuth, async(req,
     }
 })
 
+// Task Edit Route
+router.post("/:username/project/:projectId/task/:taskId/edit", requireAuth, async(req, res) => {
+    const { username, projectId, taskId } = req.params;
+    const { name, description } = req.body;
+
+    try {
+        const user = await User.findOne({ username });
+        const project = await Project.findOne({ _id: projectId, user: user._id });
+        const task = await Task.findOneAndUpdate({ project: project._id, _id: taskId }, { name, description });
+        res.json({ user, project, task });
+    } catch(err) {
+        const errors = handleProjectErrors(err);
+        res.json({ errors });
+    }
+})
+
+// Task Delete
+router.post("/:username/project/:projectId/task/:taskId/delete", requireAuth, async(req, res) => {
+    const { username, projectId, taskId } = req.params;
+
+    try {
+        const user = await User.findOne({ username });
+        const project = await Project.findOne({ _id: projectId, user: user._id });
+        await Task.findOneAndDelete({ project: project._id, _id: taskId });
+        res.redirect(`/${user.username}/project/${project._id}`);
+    } catch(err) {
+        res.json({ err });
+    }
+})
+
+
 module.exports = router;

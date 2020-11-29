@@ -153,15 +153,113 @@
         <h3 class="my-3 text-center">All Tasks for <%= project.name %></h3>
         <hr>
 
-        <!-- List of all the Tasks -->
-        <% project.tasks.forEach(task => { %>
-            <div class="card p-3">
-                <h5><a href=""><%= task.name %></a></h5> 
-                <p><%= task.description %></p> 
-            </div>
-        <% }) %>
 
         <!-- List of all the Tasks -->
+        <div id="accordion">
+
+            <% project.tasks.forEach((task, i) => { %>
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                    <h5 class="mb-0">
+                        <input type="checkbox"> <span class="float-right">
+
+                            <!-- Task Edit Button -->
+                            <a class="mr-3" data-toggle="modal" href="#taskEditModal<%= i %>">
+                                <i id="task-edit" class="fas fa-edit text-primary"></i>
+                            </a>
+                            <!-- Task Edit Button -->
+                            
+                            <!-- Task Delete Button -->
+                            <a class="mr-3" data-toggle="modal" href="#taskDeleteModal<%= i %>">
+                                <i id="task-delete" class="fas fa-trash-alt text-danger"></i>
+                            </a>
+                            <!-- Task Delete Button -->
+                                
+
+
+                            <!-- Task Edit Modal -->
+                            <div class="modal fade" id="taskEditModal<%= i %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Edit Task</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        
+                                        <form id="edit-task">
+                                            <div class="modal-body">
+                                                <div class="form-group">
+                                                    <input type="text" name="name" class="form-control" placeholder="Task Name" value="<%= task.name %>" autocomplete="off">
+                                                    <div class="name error text-danger"></div>
+                                                </div>
+
+                                                <input type="hidden" name="taskId" value="<%= task._id %>">
+                                                
+                                                <div class="form-group">
+                                                    <textarea name="description" class="form-control" placeholder="Brief Description" cols="30" rows="10"><%= task.description %></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Edit Task</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Task Edit Modal -->
+
+
+                            <!-- Task Delete Modal -->
+                            <div class="modal fade" id="taskDeleteModal<%= i %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Delete Task</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        
+                                        <form id="edit-task" action="/<%= user.username %>/project/<%= project._id %>/task/<%= task._id %>/delete" method="POST">
+                                            <div class="modal-body">
+                                                <p>Are you sure you want to delete <strong>"<%= task.name %>"</strong>?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Delete Task</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Task Delete Modal -->
+
+
+                        </span>
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse<%= i %>" aria-expanded="true" aria-controls="collapse<%= i %>">
+                            <%= task.name %>
+                        </button>
+                    </h5>
+                    </div>
+
+                    <div id="collapse<%= i %>" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body">
+                        <small class="text-muted">Created on <strong><%= task.date_created_formatted %></strong></small><br>
+                            <%= task.description %>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+
+        </div>
+        <!-- List of all the Tasks -->
+
+
+        
+
     </div>
     <!-- Task Details -->
 
@@ -173,6 +271,7 @@
     const projectNameError = document.querySelector(".name.error");
     const projectDueDateError = document.querySelector(".due-date.error");
 
+    // Edit Project
     projectEditForm.addEventListener("submit", async(e) => {
         e.preventDefault();
         
@@ -216,6 +315,7 @@
     const taskCreateForm = document.querySelector("#create-task");
     const taskNameError = document.querySelector("#create-task .name.error");
 
+    // Create Task
     taskCreateForm.addEventListener("submit", async(e) => {
         e.preventDefault();
 
@@ -246,6 +346,40 @@
 
     })
 
+
+    const taskEditForm = document.querySelector("#edit-task");
+    const taskEditNameError = document.querySelector("#edit-task .name.error");
+
+    // Edit Task
+    taskEditForm.addEventListener("submit", async(e) => {
+        e.preventDefault();
+
+        taskNameError.textContent = "";
+
+        const name = taskEditForm.name.value;
+        const description = taskEditForm.description.value;
+        const taskId = taskEditForm.taskId.value;
+
+
+        try {
+            const res = await fetch(`/<%= user.username %>/project/<%= project._id %>/task/${taskId}/edit`, {
+                method: "POST",
+                body: JSON.stringify({ name, description }),
+                headers: { "Content-Type": "application/json" }
+            });
+            const data = await res.json();
+
+            if (data.task) {
+                location.assign("/<%= user.username %>/project/<%= project._id %>")
+            }
+
+            if (data.errors) {
+                taskNameError.textContent = data.errors.name;
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    })
 
 </script>
 <%- include("./partials/footer") %> 

@@ -20,7 +20,7 @@ app.set("view engine", "ejs");
 
 // Connect to MongoDB
 mongoose.connect(process.env.DB_URI, 
-    { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: true, useCreateIndex: true },
+    { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true },
     err => {
         if(err) throw err;
         console.log("Connected to MongoDB");

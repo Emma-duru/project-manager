@@ -9,8 +9,11 @@
         <small class="text-muted">Created on <strong><%= project.date_created_formatted %></strong></small><br>
         <small class="text-danger">Due on <strong><%= project.due_date_formatted %></strong></small><br>
 
-        <button class="btn btn-outline-success complete-btn my-2">Mark as complete</button>
-
+        <% if (project.isComplete) { %>
+            <button id="project-complete" class="btn btn-success complete-btn my-2">Completed</button>
+        <% } else { %>
+            <button id="project-complete" class="btn btn-outline-success complete-btn my-2">Mark as complete</button>
+        <% } %>
         <hr>
 
         <h5 class="text-primary">Description</h5>
@@ -21,6 +24,11 @@
         <h5 class="text-primary">Total Tasks</h5>
         <p><%= project.tasks.length %></p>
 
+        <h5 class="text-primary">Completed Tasks</h5>
+        <p><%= completedTasks %> </p>
+
+        <h5 class="text-primary">Ongoing Tasks</h5>
+        <p><%= ongoingTasks %></p>
 
         <hr>
 
@@ -90,7 +98,7 @@
                     <!-- Delete Project Form -->
                     <form action="/<%= user.username %>/project/<%= project._id %>/delete" method="POST">
                         <div class="modal-body">
-                            <p>Are your sure you want to delete "<%= project.name %>" </p>
+                            <p>Are your sure you want to delete <strong>"<%= project.name %>"</strong>?</p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">No, Go back</button>
@@ -161,21 +169,38 @@
                 <div class="card">
                     <div class="card-header" id="headingOne">
                     <h5 class="mb-0">
-                        <input type="checkbox"> <span class="float-right">
+                        <span class="float-right">
 
-                            <!-- Task Edit Button -->
-                            <a class="mr-3" data-toggle="modal" href="#taskEditModal<%= i %>">
-                                <i id="task-edit" class="fas fa-edit text-primary"></i>
-                            </a>
-                            <!-- Task Edit Button -->
-                            
-                            <!-- Task Delete Button -->
-                            <a class="mr-3" data-toggle="modal" href="#taskDeleteModal<%= i %>">
-                                <i id="task-delete" class="fas fa-trash-alt text-danger"></i>
-                            </a>
-                            <!-- Task Delete Button -->
+                            <!-- Mark as Complete -->
+                            <form class="task-complete">
+                                <input type="hidden" name="taskId" value="<%= task._id %>">
                                 
+                                    <% if (task.isComplete) { %>
+                                        <button type="submit" class="btn btn-link p-0 mr-3" data-toggle="tooltip" title="Unmark as complete">
+                                            <i class="far fa-times-circle text-danger" style="font-size: 20px"></i>
+                                        </button>
+                                    
+                                    <% } else { %>
+                                        <button type="submit" class="btn btn-link p-0 mr-3" data-toggle="tooltip" title="Mark as complete">
+                                            <i class="far fa-check-square text-success" style="font-size: 20px"></i>
+                                        </button> 
+                                    <% } %> 
 
+                                <!-- Task Edit Button -->
+                                <a class="mr-3" data-toggle="modal tooltip" title="Edit Task" href="#taskEditModal<%= i %>">
+                                    <i id="task-edit" class="fas fa-edit text-primary"></i>
+                                </a>
+                                <!-- Task Edit Button -->
+
+                                <!-- Task Delete Button -->
+                                <a class="mr-3" data-toggle="modal tooltip" title="Delete Task"" href="#taskDeleteModal<%= i %>">
+                                    <i id="task-delete" class="fas fa-trash-alt text-danger"></i>
+                                </a>
+                                <!-- Task Delete Button -->
+                            </form>
+                            <!-- Mark as Complete -->
+
+                        
 
                             <!-- Task Edit Modal -->
                             <div class="modal fade" id="taskEditModal<%= i %>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -239,8 +264,10 @@
 
 
                         </span>
-                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse<%= i %>" aria-expanded="true" aria-controls="collapse<%= i %>">
-                            <%= task.name %>
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse<%= i %>" aria-expanded="true" aria-controls="collapse<%= i %>" style="text-decoration: none;">
+                            <span <% if (task.isComplete) { %> class="text-success" <% } %>>
+                                <%= task.name %>
+                            </span>
                         </button>
                     </h5>
                     </div>
@@ -351,7 +378,8 @@
     const taskEditNameError = document.querySelector("#edit-task .name.error");
 
     // Edit Task
-    taskEditForm.addEventListener("submit", async(e) => {
+    if (taskEditForm) {
+        taskEditForm.addEventListener("submit", async(e) => {
         e.preventDefault();
 
         taskNameError.textContent = "";
@@ -379,6 +407,52 @@
         } catch (err) {
             console.log(err);
         }
+    })
+
+    }
+    
+
+    const projectComplete = document.querySelector("#project-complete");
+
+    // Complete Task
+    projectComplete.addEventListener("click", async() => {
+        try {
+            const res = await fetch("/<%= user.username %>/project/<%= project._id %>/complete", {
+                method: "POST",
+            });
+            const data = await res.json();
+
+            if (data.project) {
+                location.assign(`/<%= user.username %>/project/<%= project._id %>`);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    })
+
+
+    const taskCompleteForms = document.querySelectorAll(".task-complete");
+
+    taskCompleteForms.forEach(taskForm => {
+        console.log(taskForm);
+        taskForm.addEventListener("submit", async(e) => {
+            e.preventDefault();
+
+            const taskId = taskForm.taskId.value;
+
+            try {
+                const res = await fetch(`/<%= user.username %>/project/<%= project._id %>/task/${taskId}/complete`, {
+                    method: "POST"
+                })
+                const data = await res.json();
+
+                if (data.task) {
+                    location.assign(`/<%= user.username %>/project/<%= project._id %>`)
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        })
     })
 
 </script>

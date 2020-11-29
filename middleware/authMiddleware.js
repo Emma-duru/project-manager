@@ -25,7 +25,7 @@ const requireAuth = (req, res, next) => {
 
 
 const checkUser = (req, res, next) => {
-    const token = req.cookies.user_auth;
+    const token = req.cookies.project_auth;
 
     // Check if token exists
     if(token) {
